@@ -151,6 +151,7 @@ main(int argc, char* argv[])
     uint8_t sldAcInt_BK{AC_BK};
     uint8_t sldAcInt_VI{AC_VI};
     uint8_t sldAcInt_VO{AC_VO};
+    int trafficType = 1;
 
     // EDCA configuration for CWmins, CWmaxs
     /**
@@ -188,6 +189,7 @@ main(int argc, char* argv[])
     cmd.AddValue("acVICwStage", "Cutoff Stage for AC_VI", acVICwStage);
     cmd.AddValue("acVOCwmin", "Initial CW for AC_VO", acVOCwmin);
     cmd.AddValue("acVOCwStage", "Cutoff Stage for AC_VO", acVOCwStage);
+    cmd.AddValue("trafficType", "traffic type", trafficType);
     cmd.Parse(argc, argv);
 
     RngSeedManager::SetSeed(rngRun);
@@ -439,8 +441,13 @@ main(int argc, char* argv[])
     for (uint32_t i = 0; i < nSld; ++i) //为每一个STA配置
     {
         AcIndex acType = acList[i];
-        trafficConfigMap[i] = {WifiDirection::UPLINK, TRAFFIC_BERNOULLI, acType, perSldLambda, sldDetermIntervalNs};
-    } 
+        if (trafficType == 0){
+            trafficConfigMap[i] = {WifiDirection::UPLINK, TRAFFIC_DETERMINISTIC, acType, perSldLambda, sldDetermIntervalNs};
+        }
+        else {
+            trafficConfigMap[i] = {WifiDirection::UPLINK, TRAFFIC_BERNOULLI, acType, perSldLambda, sldDetermIntervalNs};
+        }
+    }
 
     // for (uint32_t i = 0; i < nSld; ++i) //为每一个STA配置
     // {
